@@ -38,29 +38,29 @@ exports.readAll = callback => {
         var filename = file.slice(0, -4);
         array.push({ id: filename, text: filename });
       });
-      console.log(array);
       callback(null, array);
     }
   });
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  fs.readFile(exports.dataDir + "/" + id + ".txt", "utf8", (error, data) => {
+    if (error) {
+      callback(error);
+    } else {
+      callback(null, { id: id, text: data });
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
+  fs.writeFile(exports.dataDir + "/" + id + ".txt", text, (error, data) => {
+    if (error) {
+      callback(error);
+    } else {
+      callback(null, { id: id, text: data });
+    }
+  });
 };
 
 exports.delete = (id, callback) => {
