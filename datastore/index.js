@@ -1,7 +1,7 @@
-const fs = require("fs");
-const path = require("path");
-const _ = require("underscore");
-const counter = require("./counter");
+const fs = require('fs');
+const path = require('path');
+const _ = require('underscore');
+const counter = require('./counter');
 
 var items = {};
 
@@ -13,7 +13,7 @@ exports.create = (text, callback) => {
       throw error;
     } else {
       let id = counterString;
-      fs.writeFile(exports.dataDir + "/" + id + ".txt", text, error => {
+      fs.writeFile(exports.dataDir + '/' + id + '.txt', text, error => {
         if (error) {
           throw error;
         } else {
@@ -44,7 +44,7 @@ exports.readAll = callback => {
 };
 
 exports.readOne = (id, callback) => {
-  fs.readFile(exports.dataDir + "/" + id + ".txt", "utf8", (error, data) => {
+  fs.readFile(exports.dataDir + '/' + id + '.txt', 'utf8', (error, data) => {
     if (error) {
       callback(error);
     } else {
@@ -54,14 +54,24 @@ exports.readOne = (id, callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  fs.writeFile(exports.dataDir + "/" + id + ".txt", text, (error, data) => {
+  exports.readOne(id, function (error, data) {
     if (error) {
       callback(error);
     } else {
-      callback(null, { id: id, text: data });
+      fs.writeFile(exports.dataDir + '/' + id + '.txt', text, (error, data) => {
+        if (error) {
+          callback(error);
+        } else {
+          callback(null, { id: id, text: data });
+        }
+      });
     }
-  });
+  }
+  );
 };
+
+
+
 
 exports.delete = (id, callback) => {
   var item = items[id];
@@ -76,7 +86,7 @@ exports.delete = (id, callback) => {
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
 
-exports.dataDir = path.join(__dirname, "data");
+exports.dataDir = path.join(__dirname, 'data');
 
 exports.initialize = () => {
   if (!fs.existsSync(exports.dataDir)) {
